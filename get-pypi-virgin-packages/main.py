@@ -1,5 +1,6 @@
 
 import os
+import sys
 import json
 
 import requests
@@ -11,6 +12,12 @@ CLICKHOUSE_PASSWORD = os.getenv("INPUT_CLICKHOUSE_PASSWORD", "")
 
 QUERY_LIMIT = 9999999999
 QUERY_INTERVAL_SECONDS = (3600 * 48)  # 2 days
+OUTPUT_FILE = os.getenv("INPUT_OUTPUT_FILE", "pypi-virgin-packages.json")
+
+
+def stderr(message):
+    print(message, file=sys.stderr)
+
 
 #
 # https://sql.clickhouse.com
@@ -46,7 +53,12 @@ response = requests.post(
 )
 
 if response.status_code != 200:
-    print(response.text)
+    stderr(response.text)
     exit(response.status_code)
 
-print(json.dumps(response.json().get("data", []), indent="  "))
+data = response.json().get("data", [])
+
+with open(OUTPUT_FILE, "w") as f:
+    f.write(json.dumps(data, indent="  "))
+
+stderr(f"OKAY: total records {len(data)}, saved to {OUTPUT_FILE!r}")
