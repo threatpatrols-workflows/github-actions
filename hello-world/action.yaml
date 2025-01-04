@@ -4,10 +4,10 @@ description: 'A sample Hello World action'
 author: 'Threat Patrols'
 
 inputs:
-  hello_world_name:
+  hello_world:
     description: 'Entity to make Hello World statement to [default: Foobar]'
     default: 'Foobar'
 
 runs:
-  using: 'python'
-  main: 'main.py'
+  using: "docker"
+  image: "Dockerfile"
