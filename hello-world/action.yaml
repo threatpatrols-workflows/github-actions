@@ -1,0 +1,13 @@
+
+name: 'Hello World'
+description: 'A sample Hello World action'
+author: 'Threat Patrols'
+
+inputs:
+  hello_world_name:
+    description: 'Entity to make Hello World statement to [default: Foobar]'
+    default: 'Foobar'
+
+runs:
+  using: 'python'
+  main: 'main.py'
