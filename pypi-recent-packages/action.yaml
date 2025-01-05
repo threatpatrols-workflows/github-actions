@@ -1,9 +1,12 @@
 
-name: 'Get PyPi virgin packages'
-description: 'Query Click House public pypi.projects table for PyPi projects that have uploaded their first ever package.'
+name: 'Get PyPi recent packages'
+description: 'Query Click House public pypi.projects table for PyPi projects that have new package file uploads.'
 author: 'Threat Patrols'
 
 inputs:
+  query_interval_seconds:
+    description: 'Query time interval from now() until interval seconds ago [default: <172800 = 48 hours>]'
+    default: '172800'
   clickhouse_url:
     description: 'Click House data source URL [default: <clickhouse public data server>]'
     default: 'https://sql-clickhouse.clickhouse.com/'
