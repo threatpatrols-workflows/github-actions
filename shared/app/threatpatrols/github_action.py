@@ -31,7 +31,7 @@ def get_input_value(name: str, default=None, github_summary:GithubSummary=None):
     env_name = "INPUT_" + name.upper()
     value = os.getenv(env_name, default)
     if github_summary:
-        github_summary.add_content(" - {name}: {value}\n")
+        github_summary.add_content(f" - {name}: {value}\n")
     return value
 
 
