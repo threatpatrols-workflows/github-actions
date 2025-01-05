@@ -18,7 +18,7 @@ class GithubSummary:
 
         self.content = content
 
-    def add_content(self, content):
+    def add_line(self, content):
         self.content += content + "\n"
 
     def write(self):
@@ -27,18 +27,40 @@ class GithubSummary:
                 f.write(self.content.strip())
 
 
-def get_input_value(name: str, default=None, github_summary:GithubSummary=None):
-    env_name = "INPUT_" + name.upper()
-    value = os.getenv(env_name, default)
-    if github_summary:
-        github_summary.add_content(f" - {name}: {value}\n")
-    return value
+class GithubOutput:
+
+    filename: str
+    content: str
+
+    def __init__(self, filename=None, content: str = ""):
+        if filename:
+            self.filename = filename
+        else:
+            self.filename = os.getenv("GITHUB_OUTPUT")
+
+        self.content = content
+
+    def add_item(self, key, value):
+        self.content += f"{key}={value}\n" + "\n"
+
+    def write(self):
+        if self.filename:
+            with open(self.filename, "a") as f:
+                f.write(self.content.strip())
 
 
-def write_github_output(**kwargs):
-    if os.getenv("GITHUB_OUTPUT"):
-        output_content = ""
-        for key, value in kwargs.items():
-            output_content += f"{key}={value}\n"
-        with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
-            f.write(output_content.strip())
+class GithubInput:
+
+    name: str
+    github_summary: GithubSummary
+
+    def __init__(self, name, github_summary: GithubSummary = None):
+        self.name = name
+        self.github_summary = github_summary
+
+    def get(self, default=None):
+        env_name = "INPUT_" + self.name.upper()
+        value = os.getenv(env_name, default)
+        if self.github_summary:
+            self.github_summary.add_line(f" - {self.name}: {value}")
+        return value

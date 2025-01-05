@@ -5,16 +5,17 @@
 import json
 
 from threatpatrols.clickhouse import clickhouse_query
-from threatpatrols.github_action import get_input_value, write_github_output, GithubSummary
+from threatpatrols.github_action import GithubInput, GithubOutput, GithubSummary
 
+github_output = GithubOutput()
 github_summary = GithubSummary()
 
-OUTPUT_FILE = get_input_value("OUTPUT_FILE", "pypi-virgin-packages.json", github_summary)
-QUERY_LIMIT = get_input_value("QUERY_LIMIT", "9999999999")
-QUERY_INTERVAL_SECONDS = get_input_value("QUERY_INTERVAL_SECONDS", f"{3600 * 48}", github_summary)
-CLICKHOUSE_URL = get_input_value("CLICKHOUSE_URL", "https://sql-clickhouse.clickhouse.com/", github_summary)
-CLICKHOUSE_USERNAME = get_input_value("CLICKHOUSE_USERNAME", "demo", github_summary)
-CLICKHOUSE_PASSWORD = get_input_value("CLICKHOUSE_PASSWORD", "")
+OUTPUT_FILE = GithubInput("OUTPUT_FILE", github_summary).get(default="pypi-virgin-packages.json")
+QUERY_LIMIT = GithubInput("QUERY_LIMIT").get(default="9999999999")
+QUERY_INTERVAL_SECONDS = GithubInput("QUERY_INTERVAL_SECONDS", github_summary).get(default=f"{3600 * 48}")
+CLICKHOUSE_URL = GithubInput("CLICKHOUSE_URL", github_summary).get(default="https://sql-clickhouse.clickhouse.com/")
+CLICKHOUSE_USERNAME = GithubInput("CLICKHOUSE_USERNAME", github_summary).get(default="demo")
+CLICKHOUSE_PASSWORD = GithubInput("CLICKHOUSE_PASSWORD").get(default="")
 
 # ===
 
@@ -45,8 +46,8 @@ data = clickhouse_query(query=query, username=CLICKHOUSE_USERNAME, password=CLIC
 with open(OUTPUT_FILE, "w") as f:
     f.write(json.dumps(data, indent="  "))
 
-github_summary.add_content(f" - TOTAL_RECORDS: {len(data)}")
+github_output.add_item("results_file", OUTPUT_FILE)
+github_output.write()
 
-write_github_output(results_file=OUTPUT_FILE)
+github_summary.add_line(f" - TOTAL_RECORDS: {len(data)}")
 github_summary.write()
-
