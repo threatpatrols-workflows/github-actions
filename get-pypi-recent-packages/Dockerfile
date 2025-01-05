@@ -2,10 +2,10 @@ FROM alpine/git AS repo
 
 ARG REPO_NAME=threatpatrols-workflows/github-actions
 ARG REPO_BRANCH=dev
+ARG CACHE_BUST=20250105a
 
 WORKDIR /repo
-ADD "https://api.github.com/repos/${REPO_NAME}/commits/${REPO_BRANCH}?per_page=1" /last-commit.json
-RUN git clone -b ${REPO_BRANCH} --single-branch --depth 1 https://github.com/${REPO_NAME}/github-actions.git .
+RUN git clone -b ${REPO_BRANCH} --single-branch --depth 1 https://github.com/${REPO_NAME}.git .
 
 
 FROM python:3-slim AS builder
