@@ -16,8 +16,7 @@ class GithubSummary:
         else:
             self.filename = os.getenv("GITHUB_STEP_SUMMARY")
 
-        if content:
-            self.content = content
+        self.content = content
 
     def add_content(self, content):
         self.content += content + "\n"
