@@ -15,12 +15,7 @@ QUERY_INTERVAL_SECONDS = os.getenv("INPUT_QUERY_INTERVAL_SECONDS", str(3600 * 48
 OUTPUT_FILE = os.getenv("INPUT_OUTPUT_FILE", "pypi-recent-packages.json")
 
 
-def stderr(message):
-    print(message, file=sys.stderr)
-
-
-#
-# https://sql.clickhouse.com
+# Click House
 # ===
 query = f"""
     select 
@@ -53,7 +48,7 @@ response = requests.post(
 )
 
 if response.status_code != 200:
-    stderr(response.text)
+    print(response.text, file=sys.stderr)
     exit(response.status_code)
 
 data = response.json().get("data", [])
@@ -61,4 +56,18 @@ data = response.json().get("data", [])
 with open(OUTPUT_FILE, "w") as f:
     f.write(json.dumps(data, indent="  "))
 
-stderr(f"OKAY: total records {len(data)}, saved to {OUTPUT_FILE!r}")
+if os.getenv("GITHUB_OUTPUT"):
+    with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
+        f.write(f"results_file={OUTPUT_FILE}")
+
+if os.getenv("GITHUB_STEP_SUMMARY"):
+    with open(os.getenv("GITHUB_STEP_SUMMARY"), "w") as f:
+        f.write(f"""
+        TOTAL_RECORDS: {len(data)}
+        QUERY_INTERVAL_SECONDS: {QUERY_INTERVAL_SECONDS}
+        CLICKHOUSE_URL: {CLICKHOUSE_URL}
+        CLICKHOUSE_USERNAME: {CLICKHOUSE_USERNAME}
+        OUTPUT_FILE: {OUTPUT_FILE}
+""")
+
+print(f"OKAY: total records {len(data)}, saved to {OUTPUT_FILE!r}", file=sys.stderr)

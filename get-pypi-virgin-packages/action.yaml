@@ -1,11 +1,11 @@
 
 name: 'Get PyPi virgin packages'
-description: 'Get PyPi projects that have uploaded their first package'
+description: 'Query Click House public pypi.projects table for PyPi projects that have uploaded their first ever package.'
 author: 'Threat Patrols'
 
 inputs:
   clickhouse_url:
-    description: 'Click House data source URL [default: <demo data server>]'
+    description: 'Click House data source URL [default: <clickhouse public data server>]'
     default: 'https://sql-clickhouse.clickhouse.com/'
   clickhouse_username:
     description: 'Click House username [default: demo]'
@@ -14,6 +14,14 @@ inputs:
     description: 'Click House password [default: <empty>]'
     default: ''
 
+outputs:
+  results_file:
+    description: "Results file that can be referenced in later steps such as actions/upload-artifact."
+
 runs:
   using: "docker"
   image: "Dockerfile"
+
+branding:
+  icon: 'package'
+  color: 'blue'
