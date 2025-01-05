@@ -2,7 +2,7 @@ FROM alpine/git AS repo
 
 ARG REPO_NAME=threatpatrols-workflows/github-actions
 ARG REPO_BRANCH=dev
-ARG CACHE_BUST=20250105a
+ARG CACHE_BUST=20250105b
 
 WORKDIR /repo
 RUN git clone -b ${REPO_BRANCH} --single-branch --depth 1 https://github.com/${REPO_NAME}.git .
