@@ -1,22 +1,25 @@
+#
+# Copyright [2025] Threat Patrols Pty Ltd (https://www.threatpatrols.com)
+#
 
-import os
-import sys
 import json
 
-import requests
-import base64
+from threatpatrols.clickhouse import clickhouse_query
+from threatpatrols.github_action import GithubInput, GithubOutput, GithubSummary
+from threatpatrols.hash import sha256file
 
-CLICKHOUSE_URL = os.getenv("INPUT_CLICKHOUSE_URL", "https://sql-clickhouse.clickhouse.com/")
-CLICKHOUSE_USERNAME = os.getenv("INPUT_CLICKHOUSE_USERNAME", "demo")
-CLICKHOUSE_PASSWORD = os.getenv("INPUT_CLICKHOUSE_PASSWORD", "")
+github_output = GithubOutput()
+github_summary = GithubSummary()
 
-QUERY_LIMIT = os.getenv("INPUT_QUERY_LIMIT", "9999999999")
-QUERY_INTERVAL_SECONDS = os.getenv("INPUT_QUERY_INTERVAL_SECONDS", str(3600 * 48))    # 2 days
-OUTPUT_FILE = os.getenv("INPUT_OUTPUT_FILE", "pypi-recent-packages.json")
+output_file = GithubInput("output_file", github_summary).get(default="pypi-recent-packages.json")
+query_limit = GithubInput("query_limit").get(default="9999999999")
+query_interval_seconds = GithubInput("query_interval_seconds", github_summary).get(default=f"{3600 * 48}")
+clickhouse_url = GithubInput("clickhouse_url", github_summary).get(default="https://sql-clickhouse.clickhouse.com/")
+clickhouse_username = GithubInput("clickhouse_username", github_summary).get(default="demo")
+clickhouse_password = GithubInput("clickhouse_password").get(default="")
 
-
-# Click House
 # ===
+
 query = f"""
     select 
         project_name as project,
@@ -35,41 +38,20 @@ query = f"""
         order by first_upload_timestamp desc
     )
     where 1=1
-    and package_timestamp >= NOW() - INTERVAL {QUERY_INTERVAL_SECONDS} SECOND
-    limit {QUERY_LIMIT}
+    and package_timestamp >= NOW() - INTERVAL {query_interval_seconds} SECOND
+    limit {query_limit}
 """
 
-authorization = "Basic " + base64.b64encode(f"{CLICKHOUSE_USERNAME}:{CLICKHOUSE_PASSWORD}".encode()).decode()
-
-response = requests.post(
-    url=CLICKHOUSE_URL,
-    headers={"Authorization": authorization},
-    data=query +"\nFORMAT JSON"
+data = clickhouse_query(
+    query=query, username=clickhouse_username, password=clickhouse_password, server_url=clickhouse_url
 )
 
-if response.status_code != 200:
-    print(response.text, file=sys.stderr)
-    exit(response.status_code)
-
-data = response.json().get("data", [])
-
-with open(OUTPUT_FILE, "w") as f:
+with open(output_file, "w") as f:
     f.write(json.dumps(data, indent="  "))
 
-if os.getenv("GITHUB_OUTPUT"):
-    with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
-        f.write(f"results_file={OUTPUT_FILE}")
+github_output.add_item("results_file", output_file)
+github_output.write()
 
-summary_report = f"""
-TOTAL_RECORDS: {len(data)}
-QUERY_INTERVAL_SECONDS: {QUERY_INTERVAL_SECONDS}
-CLICKHOUSE_URL: {CLICKHOUSE_URL}
-CLICKHOUSE_USERNAME: {CLICKHOUSE_USERNAME}
-OUTPUT_FILE: {OUTPUT_FILE}
-"""
-
-if os.getenv("GITHUB_STEP_SUMMARY"):
-    with open(os.getenv("GITHUB_STEP_SUMMARY"), "w") as f:
-        f.write(summary_report)
-
-print(f"OKAY: total records {len(data)}, saved to {OUTPUT_FILE!r}", file=sys.stderr)
+github_summary.add_line(f"output_sha256: {sha256file(output_file)}")
+github_summary.add_line(f"total_records: {len(data)}")
+github_summary.write(sort_lines=True)

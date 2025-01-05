@@ -1,3 +1,7 @@
+#
+# Copyright [2025] Threat Patrols Pty Ltd (https://www.threatpatrols.com)
+#
+
 import hashlib
 
 CHUNK_BYTES = 65536
@@ -12,4 +16,3 @@ def sha256file(file: str):
                 break
             sha256.update(data)
     return sha256.hexdigest()
-

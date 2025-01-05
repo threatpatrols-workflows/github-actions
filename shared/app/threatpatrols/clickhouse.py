@@ -12,11 +12,7 @@ def clickhouse_query(query: str, username: str, password: str, server_url: str):
 
     authorization = "Basic " + base64.b64encode(f"{username}:{password}".encode()).decode()
 
-    response = requests.post(
-        url=server_url,
-        headers={"Authorization": authorization},
-        data=query + "\nFORMAT JSON"
-    )
+    response = requests.post(url=server_url, headers={"Authorization": authorization}, data=query + "\nFORMAT JSON")
 
     if response.status_code != 200:
         ThreatPatrolsException(response.text)

@@ -42,7 +42,9 @@ query = f"""
     limit {query_limit}
 """
 
-data = clickhouse_query(query=query, username=clickhouse_username, password=clickhouse_password, server_url=clickhouse_url)
+data = clickhouse_query(
+    query=query, username=clickhouse_username, password=clickhouse_password, server_url=clickhouse_url
+)
 
 with open(output_file, "w") as f:
     f.write(json.dumps(data, indent="  "))
