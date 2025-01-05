@@ -6,16 +6,17 @@ import json
 
 from threatpatrols.clickhouse import clickhouse_query
 from threatpatrols.github_action import GithubInput, GithubOutput, GithubSummary
+from threatpatrols.hash import sha256file
 
 github_output = GithubOutput()
 github_summary = GithubSummary()
 
-OUTPUT_FILE = GithubInput("OUTPUT_FILE", github_summary).get(default="pypi-virgin-packages.json")
-QUERY_LIMIT = GithubInput("QUERY_LIMIT").get(default="9999999999")
-QUERY_INTERVAL_SECONDS = GithubInput("QUERY_INTERVAL_SECONDS", github_summary).get(default=f"{3600 * 48}")
-CLICKHOUSE_URL = GithubInput("CLICKHOUSE_URL", github_summary).get(default="https://sql-clickhouse.clickhouse.com/")
-CLICKHOUSE_USERNAME = GithubInput("CLICKHOUSE_USERNAME", github_summary).get(default="demo")
-CLICKHOUSE_PASSWORD = GithubInput("CLICKHOUSE_PASSWORD").get(default="")
+output_file = GithubInput("output_file", github_summary).get(default="pypi-virgin-packages.json")
+query_limit = GithubInput("query_limit").get(default="9999999999")
+query_interval_seconds = GithubInput("query_interval_seconds", github_summary).get(default=f"{3600 * 48}")
+clickhouse_url = GithubInput("clickhouse_url", github_summary).get(default="https://sql-clickhouse.clickhouse.com/")
+clickhouse_username = GithubInput("clickhouse_username", github_summary).get(default="demo")
+clickhouse_password = GithubInput("clickhouse_password").get(default="")
 
 # ===
 
@@ -37,18 +38,18 @@ query = f"""
     )
     where 1=1
     and release_count = 1
-    and package_timestamp >= NOW() - INTERVAL {QUERY_INTERVAL_SECONDS} SECOND
-    limit {QUERY_LIMIT}
+    and package_timestamp >= NOW() - INTERVAL {query_interval_seconds} SECOND
+    limit {query_limit}
 """
 
-data = clickhouse_query(query=query, username=CLICKHOUSE_USERNAME, password=CLICKHOUSE_PASSWORD, server_url=CLICKHOUSE_URL)
+data = clickhouse_query(query=query, username=clickhouse_username, password=clickhouse_password, server_url=clickhouse_url)
 
-with open(OUTPUT_FILE, "w") as f:
+with open(output_file, "w") as f:
     f.write(json.dumps(data, indent="  "))
 
-github_output.add_item("results_file", OUTPUT_FILE)
+github_output.add_item("results_file", output_file)
 github_output.write()
 
-github_summary.add_line(f"OUTPUT_SHA256: xxx")
-github_summary.add_line(f"TOTAL_RECORDS: {len(data)}")
+github_summary.add_line(f"output_sha256: {sha256file(output_file)}")
+github_summary.add_line(f"total_records: {len(data)}")
 github_summary.write(sort_lines=True)

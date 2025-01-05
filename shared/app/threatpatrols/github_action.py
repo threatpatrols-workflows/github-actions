@@ -61,8 +61,8 @@ class GithubInput:
         self.name = name
         self.github_summary = github_summary
 
-    def get(self, default=None):
-        env_name = "INPUT_" + self.name.upper()
+    def get(self, default=None, prefix="INPUT_"):
+        env_name = f"{prefix}{self.name}".upper()
         value = os.getenv(env_name, default)
         if self.github_summary:
             self.github_summary.add_line(f"{self.name}: {value}")
