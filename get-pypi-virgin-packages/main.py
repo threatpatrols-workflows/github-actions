@@ -49,5 +49,5 @@ with open(OUTPUT_FILE, "w") as f:
 github_output.add_item("results_file", OUTPUT_FILE)
 github_output.write()
 
-github_summary.add_line(f" - TOTAL_RECORDS: {len(data)}")
+github_summary.add_line(f"TOTAL_RECORDS: {len(data)}")
 github_summary.write()

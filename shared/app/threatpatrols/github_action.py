@@ -62,5 +62,5 @@ class GithubInput:
         env_name = "INPUT_" + self.name.upper()
         value = os.getenv(env_name, default)
         if self.github_summary:
-            self.github_summary.add_line(f" - {self.name}: {value}")
+            self.github_summary.add_line(f"{self.name}: {value}")
         return value
