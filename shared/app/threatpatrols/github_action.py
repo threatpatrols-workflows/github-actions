@@ -21,10 +21,13 @@ class GithubSummary:
     def add_line(self, content):
         self.content += content + "\n"
 
-    def write(self):
+    def write(self, sort_lines=False):
         if self.filename:
+            content_lines = self.content.strip().split("\n")
+            if sort_lines:
+                content_lines = sorted(content_lines)
             with open(self.filename, "w") as f:
-                f.write(self.content.strip())
+                f.write("\n".join(content_lines))
 
 
 class GithubOutput:
