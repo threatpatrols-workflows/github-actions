@@ -60,14 +60,16 @@ if os.getenv("GITHUB_OUTPUT"):
     with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
         f.write(f"results_file={OUTPUT_FILE}")
 
+summary_report = f"""
+TOTAL_RECORDS: {len(data)}
+QUERY_INTERVAL_SECONDS: {QUERY_INTERVAL_SECONDS}
+CLICKHOUSE_URL: {CLICKHOUSE_URL}
+CLICKHOUSE_USERNAME: {CLICKHOUSE_USERNAME}
+OUTPUT_FILE: {OUTPUT_FILE}
+"""
+
 if os.getenv("GITHUB_STEP_SUMMARY"):
     with open(os.getenv("GITHUB_STEP_SUMMARY"), "w") as f:
-        f.write(f"""
-        TOTAL_RECORDS: {len(data)}
-        QUERY_INTERVAL_SECONDS: {QUERY_INTERVAL_SECONDS}
-        CLICKHOUSE_URL: {CLICKHOUSE_URL}
-        CLICKHOUSE_USERNAME: {CLICKHOUSE_USERNAME}
-        OUTPUT_FILE: {OUTPUT_FILE}
-""")
+        f.write(summary_report)
 
 print(f"OKAY: total records {len(data)}, saved to {OUTPUT_FILE!r}", file=sys.stderr)
