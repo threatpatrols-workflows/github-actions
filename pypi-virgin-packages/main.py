@@ -11,7 +11,7 @@ from threatpatrols.hash import sha256file
 github_output = GithubOutput()
 github_summary = GithubSummary()
 
-output_path = GithubInput("output_path", github_summary).get(default=".")
+output_file = GithubInput("output_file", github_summary).get(default="pypi-virgin-packages.json")
 query_limit = GithubInput("query_limit").get(default="9999999999")
 query_interval_seconds = GithubInput("query_interval_seconds", github_summary).get(default=f"{3600 * 48}")
 clickhouse_url = GithubInput("clickhouse_url", github_summary).get(default="https://sql-clickhouse.clickhouse.com/")
@@ -46,13 +46,12 @@ data = clickhouse_query(
     query=query, username=clickhouse_username, password=clickhouse_password, server_url=clickhouse_url
 )
 
-output_file = f"{output_path}/pypi-virgin-packages.json"
 with open(output_file, "w") as f:
     f.write(json.dumps(data, indent="  "))
 
-github_output.add_item("output_files[0]", output_file)
+github_output.add_item("output_file", output_file)
 github_output.write()
 
-github_summary.add_line(f"output_files_sha256[0]: {sha256file(output_file)}")
+github_summary.add_line(f"output_sha256: {sha256file(output_file)}")
 github_summary.add_line(f"total_records: {len(data)}")
 github_summary.write(sort_lines=True)
