@@ -5,6 +5,7 @@
 import os
 from pathlib import Path
 
+
 def file_write(filepath, content, mode="w", mkdir=True):
 
     pathname = Path(filepath).parent
