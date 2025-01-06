@@ -4,6 +4,9 @@ description: 'Query Click House public pypi.projects table for PyPi projects tha
 author: 'Threat Patrols'
 
 inputs:
+  output_path:
+    description: 'Directory where job outputs are saved [default:.]'
+    default: '.'
   query_interval_seconds:
     description: 'Query time interval from now() until interval seconds ago [default: <172800 = 48 hours>]'
     default: '172800'
@@ -18,8 +21,8 @@ inputs:
     default: ''
 
 outputs:
-  results_file:
-    description: "Results file that can be referenced in later steps such as actions/upload-artifact."
+  output_files:
+    description: "Output files in the inputs.output_path created by the job."
 
 runs:
   using: "docker"
