@@ -1,9 +1,14 @@
-import os
+from threatpatrols.github_action import GithubInput, GithubSummary
+
+github_summary = GithubSummary()
 
 
-def hello_world():
-    print(f"Hello World: {os.getenv('INPUT_HELLO_WORLD')}")
+def main():
+    hello_world = GithubInput("hello_world", github_summary).get(default=None)
+    message = f"Hello {hello_world!r} this is the World!"
+    print(message)
+    github_summary.write(sort_lines=True)
 
 
 if __name__ == "__main__":
-    hello_world()
+    main()
