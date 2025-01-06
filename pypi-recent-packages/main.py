@@ -7,6 +7,7 @@ import json
 from threatpatrols.clickhouse import clickhouse_query
 from threatpatrols.github_action import GithubInput, GithubOutput, GithubSummary
 from threatpatrols.hash import sha256file
+from threatpatrols.file import file_write
 
 github_output = GithubOutput()
 github_summary = GithubSummary()
@@ -46,10 +47,9 @@ data = clickhouse_query(
     query=query, username=clickhouse_username, password=clickhouse_password, server_url=clickhouse_url
 )
 
-with open(output_file, "w") as f:
-    f.write(json.dumps(data, indent="  "))
+file_write(filepath=output_file, content=json.dumps(data, indent="  "))
 
-github_output.add_item("results_file", output_file)
+github_output.add_item("output_file", output_file)
 github_output.write()
 
 github_summary.add_line(f"output_sha256: {sha256file(output_file)}")

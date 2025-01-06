@@ -1,9 +1,15 @@
+#
+# Copyright [2025] Threat Patrols Pty Ltd (https://www.threatpatrols.com)
+#
 
 name: 'Get PyPi recent packages'
 description: 'Query Click House public pypi.projects table for PyPi projects that have new package file uploads.'
 author: 'Threat Patrols'
 
 inputs:
+  output_file:
+    description: 'File to save output report data into [default: pypi-virgin-packages.json]'
+    default: 'pypi-virgin-packages.json'
   query_interval_seconds:
     description: 'Query time interval from now() until interval seconds ago [default: <172800 = 48 hours>]'
     default: '172800'
@@ -18,8 +24,8 @@ inputs:
     default: ''
 
 outputs:
-  results_file:
-    description: "Results file that can be referenced in later steps such as actions/upload-artifact."
+  output_file:
+    description: "File where output report data has been saved."
 
 runs:
   using: "docker"
