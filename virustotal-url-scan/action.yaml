@@ -1,0 +1,28 @@
+#
+# Copyright [2025] Threat Patrols Pty Ltd (https://www.threatpatrols.com)
+#
+
+name: 'Submit a URL to VirusTotal'
+description: 'Submits a URL to VirusTotal, waits URL scan result and supplies results as a json file.'
+author: 'Threat Patrols'
+
+inputs:
+  output_file:
+    description: 'File to save output report data into [default: virustotal-url-scan.json]'
+    default: 'virustotal-url-scan.json'
+  api_key:
+    description: 'User supplied API key for the VirusTotal service [required]'
+  url:
+    description: 'URL to be scanned [required]'
+
+outputs:
+  output_file:
+    description: "File to which output data has been saved."
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
+
+branding:
+  icon: 'package'
+  color: 'blue'

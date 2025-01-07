@@ -1,0 +1,28 @@
+#
+# Copyright [2025] Threat Patrols Pty Ltd (https://www.threatpatrols.com)
+#
+
+name: 'Submit a hex-hash value to VirusTotal'
+description: 'Submit a hex-hash value to VirusTotal to be analyzed if VirusTotal has the associated content available.'
+author: 'Threat Patrols'
+
+inputs:
+  output_file:
+    description: 'File to save output report data into [default: virustotal-hash-scan.json]'
+    default: 'virustotal-hash-scan.json'
+  api_key:
+    description: 'User supplied API key for the VirusTotal service [required]'
+  hash:
+    description: 'Hash to be scanned [required]'
+
+outputs:
+  output_file:
+    description: "File to which output data has been saved."
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
+
+branding:
+  icon: 'package'
+  color: 'blue'

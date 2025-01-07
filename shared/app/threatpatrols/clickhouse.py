@@ -8,16 +8,24 @@ import requests
 import base64
 
 
-def clickhouse_query(query: str, username: str, password: str, server_url: str):
+class Clickhouse:
 
-    authorization = "Basic " + base64.b64encode(f"{username}:{password}".encode()).decode()
+    server_url: str
+    authorization_header: str
 
-    response = requests.post(url=server_url, headers={"Authorization": authorization}, data=query + "\nFORMAT JSON")
+    def __init__(self, username: str, password: str, server_url: str):
+        self.server_url = server_url
+        self.authorization_header = "Basic " + base64.b64encode(f"{username}:{password}".encode()).decode()
 
-    if response.status_code != 200:
-        ThreatPatrolsException(response.text)
+    def query(self, sql: str):
+        response = requests.post(
+            url=self.server_url, headers={"Authorization": self.authorization_header}, data=sql + "\nFORMAT JSON"
+        )
 
-    try:
-        return response.json().get("data", [])
-    except Exception as e:
-        ThreatPatrolsException(e)
+        if response.status_code != 200:
+            ThreatPatrolsException(response.text)
+
+        try:
+            return response.json().get("data", [])
+        except Exception as e:
+            ThreatPatrolsException(e)
