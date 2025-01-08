@@ -1,11 +1,9 @@
-
 import vt
 import time
-import datetime
 
 from threatpatrols.exceptions import ThreatPatrolsException
 
-ANALYSIS_RESUBMISSION_TTL = (4 * 3600)
+ANALYSIS_RESUBMISSION_TTL = 4 * 3600
 
 
 class VirustotalAnalysisBase:
@@ -75,9 +73,7 @@ class VirustotalUrlAnalysis(VirustotalAnalysisBase):
 class VirustotalHashAnalysis(VirustotalAnalysisBase):
 
     def submit_wait_for_analysis(self, hash_value: str, force_resubmission: bool = False):
-        self.submit(
-            hash_value=hash_value, wait_for_completion=True, force_resubmission=force_resubmission
-        )
+        self.submit(hash_value=hash_value, wait_for_completion=True, force_resubmission=force_resubmission)
         return self._get_existing_analysis(hash_value=hash_value)
 
     def submit(self, hash_value: str, wait_for_completion=False, force_resubmission=False):

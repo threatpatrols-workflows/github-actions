@@ -2,7 +2,7 @@
 # Copyright [2025] Threat Patrols Pty Ltd (https://www.threatpatrols.com)
 #
 
-name: 'Submit a hex-hash value to VirusTotal'
+name: 'Submit a hash (sha256, sha1, md5) value to VirusTotal'
 description: 'Submit a hex-hash value to VirusTotal to be analyzed if VirusTotal has the associated content available.'
 author: 'Threat Patrols'
 
