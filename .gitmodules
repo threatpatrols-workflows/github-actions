@@ -1,0 +1,4 @@
+[submodule "hello-world2"]
+	path = hello-world2
+	url = git@github.com:threatpatrols-workflows/hello-world2.git
+	commit = 1c0573d1
